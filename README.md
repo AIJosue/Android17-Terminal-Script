@@ -10,7 +10,7 @@ If you want to execute the setup immediately without cloning the repository, you
 Open your terminal and run:
 
 ```bash
-curl -SL https://github.com/ITJosue/Android16-Debian13-GUI/raw/refs/heads/main/main.sh | bash
+curl -SL https://github.com/AIJosue/Android17-Terminal-Script/raw/refs/heads/main/main.sh | bash
 ```
 
 ## 🚀 What Does This Project Do?
