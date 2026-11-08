@@ -7,7 +7,6 @@
 # ==============================================================================
 
 # --- Global Variables and Initialization ---
-LANG_CHOICE="en"
 TARGET_USER=$(whoami)
 
 if [ "$(id -u)" -eq 0 ]; then
@@ -27,114 +26,62 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# --- Complete Multilingual Message Dictionary ---
+# --- Message Dictionary ---
 declare -A messages
 messages=(
-    ["press_enter_cn"]="Press Enter to continue..."
-    ["press_enter_en"]="Press Enter to continue..."
-    ["invalid_option_cn"]="Invalid option, please try again."
-    ["invalid_option_en"]="Invalid option, please try again."
-    ["operation_cancelled_cn"]="Operation cancelled."
-    ["operation_cancelled_en"]="Operation cancelled."
-    ["install_success_cn"]="Successfully installed %s"
-    ["install_success_en"]="Successfully installed %s"
-    ["install_fail_cn"]="Failed to install %s"
-    ["install_fail_en"]="Failed to install %s"
-    ["command_fail_cn"]="Command failed: %s"
-    ["command_fail_en"]="Command failed: %s"
+    ["press_enter"]="Press Enter to continue..."
+    ["invalid_option"]="Invalid option, please try again."
+    ["operation_cancelled"]="Operation cancelled."
+    ["install_success"]="Successfully installed %s"
+    ["install_fail"]="Failed to install %s"
+    ["command_fail"]="Command failed: %s"
     
-    ["welcome_banner_cn"]="Welcome to the Debian Desktop Environment Installer (Android VM Edition)"
-    ["welcome_banner_en"]="Welcome to the Debian Desktop Environment Installer (Android VM Edition)"
-    ["select_lang_prompt_cn"]="Please select script UI language:"
-    ["select_lang_prompt_en"]="Please select script UI language:"
-    ["lang_choice_cn_cn"]="1. English (Default)"
-    ["lang_choice_cn_en"]="1. English (Default)"
-    ["lang_choice_en_cn"]="2. English"
-    ["lang_choice_en_en"]="2. English"
-    ["enter_lang_num_cn"]="Enter number (1/2): "
-    ["enter_lang_num_en"]="Enter number (1/2): "
+    ["welcome_banner"]="Welcome to the Debian Desktop Environment Installer (Android VM Edition)"
+    ["set_password_prompt"]="Set or change the login password for user '$TARGET_USER'? (y/n): "
+    ["desktop_select"]="Select the desktop environment you want to install"
+    ["enter_desktop_num"]="Please enter the number for the desktop environment: "
     
-    ["set_password_prompt_cn"]="Set or change the login password for user '$TARGET_USER'? (y/n): "
-    ["set_password_prompt_en"]="Set or change the login password for user '$TARGET_USER'? (y/n): "
-    ["desktop_select_cn"]="Select the desktop environment you want to install"
-    ["desktop_select_en"]="Select the desktop environment you want to install"
-    ["enter_desktop_num_cn"]="Please enter the number for the desktop environment: "
-    ["enter_desktop_num_en"]="Please enter the number for the desktop environment: "
+    ["confirm_banner"]="Installation Confirmation"
+    ["confirm_intro"]="The following actions will be performed on your system:"
+    ["confirm_user"]="  - User: '$TARGET_USER'"
+    ["confirm_desktop"]="  - Install Desktop: "
+    ["confirm_ssh"]="  - Configure SSH Service (Port 10022, IPv4 forced for stability)"
+    ["confirm_vnc"]="  - Configure VNC Service (Port 5901, includes Android X11 fixes)"
+    ["confirm_proceed"]="Do you want to continue? (y/n): "
+
+    ["update_pkg"]="Updating package list..."
+    ["upgrade_pkg"]="Upgrading installed packages..."
+    ["ssh_modify"]="Configuring SSH server..."
+    ["network_fix"]="Applying Android VM network bridge stability patch..."
+    ["locale_check"]="Configuring system locale and font packages..."
+    ["desktop_install"]="Installing %s desktop environment, this may take a while..."
+    ["vnc_passwd_prompt"]="Next, please set a password for your VNC session (at least 6 characters)."
+    ["vnc_config"]="Configuring TigerVNC and fixing Android VM dependencies..."
     
-    ["confirm_banner_cn"]="Installation Confirmation"
-    ["confirm_banner_en"]="Installation Confirmation"
-    ["confirm_intro_cn"]="The following actions will be performed on your system:"
-    ["confirm_intro_en"]="The following actions will be performed on your system:"
-    ["confirm_user_cn"]="  - User: '$TARGET_USER'"
-    ["confirm_user_en"]="  - User: '$TARGET_USER'"
-    ["confirm_desktop_cn"]="  - Install Desktop: "
-    ["confirm_desktop_en"]="  - Install Desktop: "
-    ["confirm_ssh_cn"]="  - Configure SSH Service (Port 10022, IPv4 forced for stability)"
-    ["confirm_ssh_en"]="  - Configure SSH Service (Port 10022, IPv4 forced for stability)"
-    ["confirm_vnc_cn"]="  - Configure VNC Service (Port 5901, includes Android X11 fixes)"
-    ["confirm_vnc_en"]="  - Configure VNC Service (Port 5901, includes Android X11 fixes)"
-    ["confirm_proceed_cn"]="Do you want to continue? (y/n): "
-    ["confirm_proceed_en"]="Do you want to continue? (y/n): "
+    ["android_share_banner"]="Mounting Android shared directory..."
+    ["input_method_prompt"]="Install Fcitx5 input method framework? (y/n): "
+    ["ime_install_banner"]="Installing input method framework (Fcitx5)..."
+    ["common_apps_desc"]="Optional software suite includes:\n  - Chromium, LibreOffice, VLC, GIMP, htop, curl, git, etc."
+    ["common_apps_prompt"]="Install the above common desktop & system software suite? (y/n): "
+    ["apps_install_banner"]="Installing common software suite..."
 
-    ["update_pkg_cn"]="Updating package list..."
-    ["update_pkg_en"]="Updating package list..."
-    ["upgrade_pkg_cn"]="Upgrading installed packages..."
-    ["upgrade_pkg_en"]="Upgrading installed packages..."
-    ["ssh_modify_cn"]="Configuring SSH server..."
-    ["ssh_modify_en"]="Configuring SSH server..."
-    ["network_fix_cn"]="Applying Android VM network bridge stability patch..."
-    ["network_fix_en"]="Applying Android VM network bridge stability patch..."
-    ["locale_check_cn"]="Configuring system locale and font packages..."
-    ["locale_check_en"]="Configuring system locale and font packages..."
-    ["desktop_install_cn"]="Installing %s desktop environment, this may take a while..."
-    ["desktop_install_en"]="Installing %s desktop environment, this may take a while..."
-    ["vnc_passwd_prompt_cn"]="Next, please set a password for your VNC session (at least 6 characters)."
-    ["vnc_passwd_prompt_en"]="Next, please set a password for your VNC session (at least 6 characters)."
-    ["vnc_config_cn"]="Configuring TigerVNC and fixing Android VM dependencies..."
-    ["vnc_config_en"]="Configuring TigerVNC and fixing Android VM dependencies..."
-    
-    ["android_share_banner_cn"]="Mounting Android shared directory..."
-    ["android_share_banner_en"]="Mounting Android shared directory..."
-    ["input_method_prompt_cn"]="Install Fcitx5 input method framework (Optional CJK / Multilingual Pinyin support)? (y/n): "
-    ["input_method_prompt_en"]="Install Fcitx5 input method framework (Optional CJK / Multilingual Pinyin support)? (y/n): "
-    ["ime_install_banner_cn"]="Installing input method framework (Fcitx5)..."
-    ["ime_install_banner_en"]="Installing input method framework (Fcitx5)..."
-    ["common_apps_desc_cn"]="Optional software suite includes:\n  - Chromium, LibreOffice, VLC, GIMP, htop, curl, git, etc."
-    ["common_apps_desc_en"]="Optional software suite includes:\n  - Chromium, LibreOffice, VLC, GIMP, htop, curl, git, etc."
-    ["common_apps_prompt_cn"]="Install the above common desktop & system software suite? (y/n): "
-    ["common_apps_prompt_en"]="Install the above common desktop & system software suite? (y/n): "
-    ["apps_install_banner_cn"]="Installing common software suite..."
-    ["apps_install_banner_en"]="Installing common software suite..."
+    ["final_summary"]="🎉 All configurations completed!"
+    ["final_client_title"]="${GREEN}💻 Recommended Connection Methods:${NC}"
+    ["final_client_phone"]="  - 📱 ${BLUE}On Phone:${NC} Install the [AVNC] app, connect to address ${YELLOW}127.0.0.1${NC}, port ${YELLOW}5901${NC}."
+    ["final_client_pc"]="  - 🖥️ ${BLUE}On Windows PC (Recommended, via ADB Forwarding):${NC}"
+    ["final_client_adb"]="      1. Connect phone via USB and enable [USB Debugging].\n      2. Run in Windows CMD/PowerShell: ${YELLOW}adb forward tcp:5901 tcp:5901${NC}\n      3. Open TigerVNC client on PC, connect to: ${YELLOW}127.0.0.1:5901${NC}"
 
-    ["final_summary_cn"]="🎉 All configurations completed!"
-    ["final_summary_en"]="🎉 All configurations completed!"
-    ["final_client_title_cn"]="${GREEN}💻 Recommended Connection Methods:${NC}"
-    ["final_client_title_en"]="${GREEN}💻 Recommended Connection Methods:${NC}"
-    ["final_client_phone_cn"]="  - 📱 ${BLUE}On Phone:${NC} Install the [AVNC] app, connect to address ${YELLOW}127.0.0.1${NC}, port ${YELLOW}5901${NC}."
-    ["final_client_phone_en"]="  - 📱 ${BLUE}On Phone:${NC} Install the [AVNC] app, connect to address ${YELLOW}127.0.0.1${NC}, port ${YELLOW}5901${NC}."
-    ["final_client_pc_cn"]="  - 🖥️ ${BLUE}On Windows PC (Recommended, via ADB Forwarding):${NC}"
-    ["final_client_pc_en"]="  - 🖥️ ${BLUE}On Windows PC (Recommended, via ADB Forwarding):${NC}"
-    ["final_client_adb_cn"]="      1. Connect phone via USB and enable [USB Debugging].\n      2. Run in Windows CMD/PowerShell: ${YELLOW}adb forward tcp:5901 tcp:5901${NC}\n      3. Open TigerVNC client on PC, connect to: ${YELLOW}127.0.0.1:5901${NC}"
-    ["final_client_adb_en"]="      1. Connect phone via USB and enable [USB Debugging].\n      2. Run in Windows CMD/PowerShell: ${YELLOW}adb forward tcp:5901 tcp:5901${NC}\n      3. Open TigerVNC client on PC, connect to: ${YELLOW}127.0.0.1:5901${NC}"
+    ["final_audio_title"]="${GREEN}🔊 Audio Solution (Fix Missing Sound in VNC):${NC}"
+    ["final_audio_desc"]="  - Android 16 VM lacks native audio passthrough. Use companion app [Simple Protocol Player]:\n      🔗 App Download: ${YELLOW}https://github.com/xlzhen-940218/SimpleProtocolPlayer/releases${NC}\n      1. Run in Linux terminal to start audio streaming module:\n         ${YELLOW}pactl load-module module-simple-protocol-tcp rate=44100 format=s16le channels=2 record=true port=12345${NC}\n      2. Open App on phone, set IP ${YELLOW}127.0.0.1${NC}, port ${YELLOW}12345${NC}, mode [Speaker], and tap Start Stream!"
 
-    ["final_audio_title_cn"]="${GREEN}🔊 Audio Solution (Fix Missing Sound in VNC):${NC}"
-    ["final_audio_title_en"]="${GREEN}🔊 Audio Solution (Fix Missing Sound in VNC):${NC}"
-    ["final_audio_desc_cn"]="  - Android 16 VM lacks native audio passthrough. Use companion app [Simple Protocol Player]:\n      🔗 App Download: ${YELLOW}https://github.com/xlzhen-940218/SimpleProtocolPlayer/releases${NC}\n      1. Run in Linux terminal to start audio streaming module:\n         ${YELLOW}pactl load-module module-simple-protocol-tcp rate=44100 format=s16le channels=2 record=true port=12345${NC}\n      2. Open App on phone, set IP ${YELLOW}127.0.0.1${NC}, port ${YELLOW}12345${NC}, mode [Speaker], and tap Start Stream!"
-    ["final_audio_desc_en"]="  - Android 16 VM lacks native audio passthrough. Use companion app [Simple Protocol Player]:\n      🔗 App Download: ${YELLOW}https://github.com/xlzhen-940218/SimpleProtocolPlayer/releases${NC}\n      1. Run in Linux terminal to start audio streaming module:\n         ${YELLOW}pactl load-module module-simple-protocol-tcp rate=44100 format=s16le channels=2 record=true port=12345${NC}\n      2. Open App on phone, set IP ${YELLOW}127.0.0.1${NC}, port ${YELLOW}12345${NC}, mode [Speaker], and tap Start Stream!"
-
-    ["final_faq_title_cn"]="${RED}🛠️ Troubleshooting & FAQ:${NC}"
-    ["final_faq_title_en"]="${RED}🛠️ Troubleshooting & FAQ:${NC}"
-    ["final_faq_1_cn"]="  ${YELLOW}1. VNC connection refused, timeout, or black screen?${NC}\n     -> Usually caused by Android killing background processes. Swipe away/kill the terminal app, then reopen it. Set [Battery Optimization] to [Unrestricted] in Android settings."
-    ["final_faq_1_en"]="  ${YELLOW}1. VNC connection refused, timeout, or black screen?${NC}\n     -> Usually caused by Android killing background processes. Swipe away/kill the terminal app, then reopen it. Set [Battery Optimization] to [Unrestricted] in Android settings."
-    ["final_faq_2_cn"]="  ${YELLOW}2. Cannot type in desktop / Fcitx5 not showing?${NC}\n     -> Input framework needs a restart. Close and reopen the terminal app, or run 'vncserver -kill :1 && vncserver :1'."
-    ["final_faq_2_en"]="  ${YELLOW}2. Cannot type in desktop / Fcitx5 not showing?${NC}\n     -> Input framework needs a restart. Close and reopen the terminal app, or run 'vncserver -kill :1 && vncserver :1'."
-    ["final_faq_3_cn"]="  ${YELLOW}3. The 'Android_Files' shared folder is empty / Permission denied?${NC}\n     -> Ensure your VM App has [All Files Access] permission. If mount fails, restart your phone to reset Android mounts."
-    ["final_faq_3_en"]="  ${YELLOW}3. The 'Android_Files' shared folder is empty / Permission denied?${NC}\n     -> Ensure your VM App has [All Files Access] permission. If mount fails, restart your phone to reset Android mounts."
-    ["final_faq_4_cn"]="  ${YELLOW}4. No audio output when playing videos/webpages?${NC}\n     -> Android 16 VM lacks native sound card mapping. Use the Simple Protocol Player solution above to stream desktop audio to your phone."
-    ["final_faq_4_en"]="  ${YELLOW}4. No audio output when playing videos/webpages?${NC}\n     -> Android 16 VM lacks native sound card mapping. Use the Simple Protocol Player solution above to stream desktop audio to your phone."
+    ["final_faq_title"]="${RED}🛠️ Troubleshooting & FAQ:${NC}"
+    ["final_faq_1"]="  ${YELLOW}1. VNC connection refused, timeout, or black screen?${NC}\n     -> Usually caused by Android killing background processes. Swipe away/kill the terminal app, then reopen it. Set [Battery Optimization] to [Unrestricted] in Android settings."
+    ["final_faq_2"]="  ${YELLOW}2. Cannot type in desktop / input method not working?${NC}\n     -> Input framework needs a restart. Close and reopen the terminal app, or run 'vncserver -kill :1 && vncserver :1'."
+    ["final_faq_3"]="  ${YELLOW}3. The 'Android_Files' shared folder is empty / Permission denied?${NC}\n     -> Ensure your VM App has [All Files Access] permission. If mount fails, restart your phone to reset Android mounts."
+    ["final_faq_4"]="  ${YELLOW}4. No audio output when playing videos/webpages?${NC}\n     -> Android 16 VM lacks native sound card mapping. Use the Simple Protocol Player solution above to stream desktop audio to your phone."
 )
 
-function lang() { local key="${1}_${LANG_CHOICE}"; printf -- "${messages[$key]}"; }
+function lang() { local key="$1"; printf -- "${messages[$key]}"; }
 function info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 function error() { echo -e "${RED}[ERROR]${NC} $1"; }
 function banner() { echo -e "${BLUE}============================================================${NC}\n${BLUE}$1${NC}\n${BLUE}============================================================${NC}"; }
@@ -145,11 +92,6 @@ function install_package() { local pkg_name=$1; if ! sudo apt install -y "$pkg_n
 function user_selections() {
     clear
     banner "$(lang welcome_banner)"
-    
-    echo -e "$(lang select_lang_prompt)"
-    echo "$(lang lang_choice_en)"
-    read -p "$(lang enter_lang_num)" lang_choice_num
-    LANG_CHOICE="en"
     
     read -p "$(lang set_password_prompt)" set_pwd
     if [[ "$set_pwd" =~ ^[Yy]$ ]]; then sudo passwd $TARGET_USER; fi
@@ -202,7 +144,7 @@ function prepare_system() {
         sed -i "s/export LC_ALL=.*/export LC_ALL=$SYS_LOCALE/" ~/.bashrc
     fi
     
-    install_package "fonts-noto-cjk"; install_package "fonts-wqy-zenhei"; install_package "fonts-wqy-microhei"
+    install_package "fonts-dejavu"; install_package "fonts-noto-core"
 }
 
 # --- Step 3: Inject Android Network Bridge Stability Patch ---
@@ -316,7 +258,7 @@ function optional_components() {
     read -p "$(lang input_method_prompt)" install_ime
     if [[ "$install_ime" =~ ^[Yy]$ ]]; then
         banner "$(lang ime_install_banner)"
-        install_package "fcitx5"; install_package "fcitx5-chinese-addons"
+        install_package "fcitx5"
         install_package "fcitx5-frontend-gtk3"; install_package "fcitx5-frontend-qt5"
         install_package "im-config"; im-config -n fcitx5
     fi
